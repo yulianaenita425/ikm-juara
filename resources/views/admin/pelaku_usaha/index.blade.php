@@ -398,14 +398,13 @@ function editData(item) {
     const form = document.getElementById('mainForm');
     const methodField = document.getElementById('methodField');
 
-    // Menambahkan spoofing method PUT untuk Laravel
     if(methodField) {
-        methodField.innerHTML = '<input type="hidden" name="_method" value="PUT">';
+        methodField.innerHTML = '@method("PUT")'; // Gunakan directive Laravel
     }
 
     if (form) {
         form.reset();
-        // Mengisi data ke input form berdasarkan nama field
+        // Mengisi data ke input form
         Object.keys(item).forEach(key => {
             const input = form.querySelector(`[name="${key}"]`);
             if (input) input.value = item[key];
@@ -415,7 +414,8 @@ function editData(item) {
     window.dispatchEvent(new CustomEvent('set-modal', {
         detail: {
             title: 'Edit Data: ' + item.nama_perusahaan,
-            action: `/pelaku-usaha/update/${item.id}`,
+            // Gunakan template literal yang benar
+            action: "{{ url('/pelaku-usaha/update') }}/" + item.id, 
             open: true
         }
     }));
