@@ -12,7 +12,9 @@ return new class extends Migration
 public function up()
 {
     Schema::table('pelaku_usaha', function (Blueprint $table) {
-        $table->bigInteger('investasi')->nullable()->after('tingkat_risiko');
+        if (!Schema::hasColumn('pelaku_usaha', 'investasi')) {
+            $table->bigInteger('investasi')->nullable()->after('tingkat_risiko');
+        }
     });
 }
 
