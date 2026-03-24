@@ -43,11 +43,6 @@
             "npm install",
             "npm run build"
         ],
-
-        "post-install-cmd": [
-        "@php artisan cache:clear",
-        "@php artisan config:clear"
-        ],
         
         "dev": [
             "Composer\\Config::disableProcessTimeout",
