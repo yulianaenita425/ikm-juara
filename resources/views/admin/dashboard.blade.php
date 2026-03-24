@@ -1,110 +1,78 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - IKM Juara</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #f8fafc; /* Slate 50 */
-        }
-        .sidebar-navy {
-            background-color: #0f172a; /* Navy sangat gelap (Slate 900) */
-        }
-        .card-shadow {
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-        }
-    </style>
-</head>
-<body class="flex">
+@extends('layouts.admin')
 
-    <aside class="w-72 min-h-screen sidebar-navy text-slate-300 p-8 hidden lg:flex flex-col sticky top-0 h-screen">
-        <div class="mb-12">
-            <h2 class="text-2xl font-black italic tracking-tighter text-white uppercase">
-                IKM<span class="text-amber-500">JUARA</span>
-            </h2>
-            <p class="text-[10px] font-bold tracking-[0.3em] text-slate-500 mt-1 uppercase">Control Panel</p>
-        </div>
+@section('title', 'Ringkasan Data')
 
-        <nav class="space-y-4 flex-1 overflow-y-auto">
-            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 {{ request()->routeIs('admin.dashboard') ? 'bg-slate-800 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-800' }} px-5 py-4 rounded-2xl font-semibold transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                </svg>
-                Dashboard
-            </a>
-
-            <a href="/admin/data-ikm" class="flex items-center gap-3 px-5 py-4 rounded-2xl hover:bg-slate-800 transition font-medium group text-slate-400 hover:text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-                Data Pelaku Usaha
-            </a>
-
-            <a href="{{ route('admin.pendaftar') }}" class="flex items-center gap-3 {{ request()->routeIs('admin.pendaftar') ? 'bg-slate-800 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-800' }} px-5 py-4 rounded-2xl transition font-medium group">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-                Data Pendaftar
-            </a>
-
-            <a href="#" class="flex items-center gap-3 px-5 py-4 rounded-2xl hover:bg-slate-800 transition font-medium text-slate-400 hover:text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-                Statistik
-            </a>
-
-            <div class="pt-4 pb-2">
-                <hr class="border-slate-800">
-            </div>
-
-            <a href="{{ route('admin.pengaturan') }}" class="flex items-center gap-3 {{ request()->routeIs('admin.pengaturan') ? 'bg-slate-800 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-800' }} px-5 py-4 rounded-2xl transition font-medium group">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                Pengaturan Admin
-            </a>
-        </nav>
-
-        <div class="pt-10 border-t border-slate-800">
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="w-full flex items-center gap-3 px-5 py-4 rounded-2xl text-red-400 hover:bg-red-500/10 transition font-bold group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+@section('content')
+<div class="space-y-8">
+    {{-- Baris Card Statistik Utama --}}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 transition-all hover:shadow-xl hover:shadow-slate-200/50 group">
+            <div class="flex justify-between items-start mb-6">
+                <div class="p-4 bg-orange-50 rounded-2xl text-orange-500 group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                     </svg>
-                    Keluar
-                </button>
-            </form>
-        </div>
-    </aside>
-
-    <main class="flex-1 min-h-screen">
-        <header class="bg-white border-b border-slate-200 px-10 py-6 flex justify-between items-center sticky top-0 z-10">
-            <div>
-                <h1 class="text-xl font-bold text-slate-800">Ringkasan Data</h1>
-                <p class="text-xs text-slate-400 font-semibold uppercase tracking-wider">{{ \Carbon\Carbon::now()->isoFormat('dddd, D MMMM Y') }}</p>
-            </div>
-            <div class="flex items-center gap-6">
-                <div class="flex flex-col text-right">
-                    <span class="text-sm font-bold text-slate-700 uppercase">{{ Auth::user()->name ?? 'Administrator' }}</span>
-                    <span class="text-[10px] text-green-500 font-black">ACTIVE SESSION</span>
                 </div>
-                <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center border border-slate-200 shadow-sm font-bold text-indigo-600">
-                    {{ strtoupper(substr(Auth::user()->name ?? 'AD', 0, 2)) }}
+                <span class="text-[10px] font-black text-slate-300 uppercase tracking-widest">Database IKM</span>
+            </div>
+            <p class="text-slate-400 text-xs font-bold uppercase tracking-[0.2em] mb-2">Total Pelaku Usaha</p>
+            <h3 class="text-4xl font-black text-slate-800 tracking-tighter">
+                {{-- Menggunakan tabel pelaku_usaha yang sudah pasti ada --}}
+                {{ DB::table('pelaku_usaha')->count() }} 
+                <span class="text-sm text-slate-300 font-medium ml-1 italic text-orange-400">Unit</span>
+            </h3>
+        </div>
+
+        <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 transition-all hover:shadow-xl hover:shadow-slate-200/50 group">
+            <div class="flex justify-between items-start mb-6">
+                <div class="p-4 bg-indigo-50 rounded-2xl text-indigo-500 group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </div>
+                <span class="text-[10px] font-black text-slate-300 uppercase tracking-widest">User System</span>
+            </div>
+            <p class="text-slate-400 text-xs font-bold uppercase tracking-[0.2em] mb-2">Total Admin</p>
+            <h3 class="text-4xl font-black text-slate-800 tracking-tighter">
+                {{ DB::table('users')->count() }} 
+                <span class="text-sm text-slate-300 font-medium ml-1 italic text-indigo-400">User</span>
+            </h3>
+        </div>
+
+        <div class="bg-[#0F172A] p-8 rounded-[2.5rem] shadow-2xl shadow-slate-300 transition-all group relative overflow-hidden">
+            <div class="relative z-10">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="p-4 bg-slate-800 rounded-2xl text-emerald-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                </div>
+                <p class="text-slate-500 text-xs font-bold uppercase tracking-[0.2em] mb-2">Status Koneksi</p>
+                <div class="flex items-baseline gap-2">
+                    <h3 class="text-3xl font-black text-white tracking-tighter uppercase">Online</h3>
+                    <span class="text-[10px] font-bold text-emerald-500 animate-bounce">SECURE</span>
                 </div>
             </div>
-        </header>
-
-        <div class="p-10">
-            @yield('content')
+            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-slate-800/50 rounded-full blur-3xl"></div>
         </div>
-    </main>
+    </div>
 
-</body>
-</html>
+    {{-- Area Visual --}}
+    <div class="bg-white rounded-[3rem] p-12 border border-slate-100 shadow-sm min-h-[400px] flex flex-col items-center justify-center text-center relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 via-indigo-500 to-purple-500"></div>
+        
+        <div class="bg-slate-50 p-6 rounded-full mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+            </svg>
+        </div>
+        
+        <h4 class="text-2xl font-extrabold text-slate-800 mb-2">Visualisasi Grafik IKM</h4>
+        <p class="text-slate-400 max-w-md mx-auto leading-relaxed">
+            Data statistik akan tampil secara otomatis di sini setelah data kecamatan diperbarui di menu 
+            <a href="{{ route('admin.statistik') }}" class="text-indigo-600 font-bold hover:underline">Statistik</a>.
+        </p>
+    </div>
+</div>
+@endsection

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrasi Pelatihan UMKM Madiun</title>
+    <title>Registrasi Pelatihan IKM Madiun</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
     <style>
@@ -77,43 +77,47 @@
     </div>
 @endif
 
-        <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
-            <div class="h-2 bg-slate-100">
-                <div id="progress-bar" class="h-full bg-indigo-600" style="width: 20%"></div>
+<div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+    <div class="h-2 bg-slate-100">
+        <div id="progress-bar" class="h-full bg-indigo-600" style="width: 20%"></div>
+    </div>
+
+    <form action="{{ route('pendaftaran.store') }}" method="POST" enctype="multipart/form-data" id="registrationForm" onsubmit="return finalCheck()">
+        @csrf
+
+        <div class="step-content active p-8" id="step-1">
+            <div class="bg-indigo-50 p-6 rounded-2xl mb-6 border border-indigo-100">
+                <h3 class="font-bold text-indigo-800 mb-2">Penting untuk Diketahui:</h3>
+                <p class="text-sm text-indigo-700 leading-relaxed italic">"Data ini digunakan untuk menyesuaikan materi pelatihan agar sesuai dengan kondisi usaha Anda. Semua informasi bersifat rahasia."</p>
             </div>
+            
+<div class="mb-3">
+    <label for="pilih_kegiatan" class="form-label font-bold">Pilih Kegiatan Pelatihan:</label>
+    <select name="nama_kegiatan" id="pilih_kegiatan" onchange="updateDetail()" class="w-full border border-slate-200 rounded-xl px-4 py-4 outline-none focus:ring-2 focus:ring-indigo-500 transition" required>
+        <option value="">-- Pilih Kegiatan --</option>
+    
+        {{-- Menggunakan variabel $kegiatan sesuai dengan Route::get('/daftar') --}}
+        @if(isset($kegiatan) && $kegiatan->count() > 0)
+            @foreach($kegiatan as $keg)
+<option value="{{ $keg->nama_kegiatan }}" 
+        data-tempat="{{ $keg->tempat_kegiatan ?? $keg->tempat }}" 
+        data-jadwal="{{ isset($keg->tgl_mulai) ? \Carbon\Carbon::parse($keg->tgl_mulai)->format('d M Y') : '' }} s/d {{ isset($keg->tgl_selesai) ? \Carbon\Carbon::parse($keg->tgl_selesai)->format('d M Y') : '' }}"
+        data-deskripsi="{{ $keg->deskripsi_kegiatan ?? '' }}"
+        data-kuota="{{ $keg->kuota_peserta ?? $keg->kuota ?? '0' }}">
+    {{ $keg->nama_kegiatan }}
+</option>
+            @endforeach
+        @endif
+    </select>
+</div>
 
-            <form action="{{ route('pendaftaran.store') }}" method="POST" enctype="multipart/form-data" id="registrationForm" onsubmit="return finalCheck()">
-                @csrf
-
-                <div class="step-content active p-8" id="step-1">
-                    <div class="bg-indigo-50 p-6 rounded-2xl mb-6 border border-indigo-100">
-                        <h3 class="font-bold text-indigo-800 mb-2">Penting untuk Diketahui:</h3>
-                        <p class="text-sm text-indigo-700 leading-relaxed italic">"Data ini digunakan untuk menyesuaikan materi pelatihan agar sesuai dengan kondisi usaha Anda. Semua informasi bersifat rahasia."</p>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label class="block text-sm font-bold text-gray-700 mb-2">Pilih Kegiatan Pelatihan:</label>
-                        <select name="nama_kegiatan" id="pilih_kegiatan" onchange="updateDetail()" class="w-full border border-slate-200 rounded-xl px-4 py-4 outline-none focus:ring-2 focus:ring-indigo-500 transition" required>
-                            <option value="">-- Pilih Kegiatan --</option>
-                            @if(isset($list_kegiatan) && $list_kegiatan->count() > 0)
-                                @foreach($list_kegiatan as $keg)
-                                    <option value="{{ $keg->nama_kegiatan }}" 
-                                            data-tempat="{{ $keg->tempat_kegiatan }}" 
-                                            data-jadwal="{{ \Carbon\Carbon::parse($keg->tgl_mulai)->format('d M Y') }} s/d {{ \Carbon\Carbon::parse($keg->tgl_selesai)->format('d M Y') }}"
-                                            data-deskripsi="{{ $keg->deskripsi_kegiatan }}">
-                                        {{ $keg->nama_kegiatan }}
-                                    </option>
-                                @endforeach
-                            @endif
-                        </select>
-                    </div>
-
-                    <div id="info_kegiatan" class="hidden bg-blue-50 border-l-4 border-blue-500 p-5 mb-6 rounded-r-2xl">
-                        <p class="text-xs font-bold text-blue-800 uppercase tracking-wider">Detail Kegiatan:</p>
-                        <p class="text-sm text-gray-700 mt-2" id="text_jadwal"></p>
-                        <p class="text-sm text-gray-700 font-semibold" id="text_tempat"></p>
-                        <p class="text-xs text-gray-500 mt-2 italic border-t border-blue-100 pt-2" id="text_deskripsi"></p>
-                    </div>
+<div id="detail_box" class="hidden mt-4 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-xl">
+    <p class="text-sm text-slate-600 mb-1">📅 <strong>Jadwal:</strong> <span id="det_jadwal"></span></p>
+    <p class="text-sm text-slate-600 mb-1">📍 <strong>Tempat:</strong> <span id="det_tempat"></span></p>
+    <p class="text-sm text-slate-600 mb-2">👥 <strong>Kuota:</strong> <span id="det_kuota" class="font-bold text-blue-900"></span> Orang</p>
+    <hr class="my-2 border-blue-100">
+    <p class="text-sm italic text-slate-500" id="det_deskripsi"></p>
+</div>
 
                     <button type="button" onclick="goToStep(2)" class="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl transition shadow-lg transform active:scale-[0.98]">
                         Mulai Mendaftar (2-3 Menit) <i class="fas fa-arrow-right ml-2"></i>
@@ -343,7 +347,7 @@
                         </div>
 
                         <div class="space-y-3">
-                            <label class="font-medium text-sm">Apakah Anda pernah mengikuti pelatihan UMKM sebelumnya?</label>
+                            <label class="font-medium text-sm">Apakah Anda pernah mengikuti pelatihan IKM sebelumnya?</label>
                             <div class="flex gap-6">
                                 <label class="flex items-center gap-2 cursor-pointer group">
                                     <input type="radio" name="pernah_pelatihan" value="Pernah" class="w-4 h-4 accent-indigo-600" required> 
@@ -385,20 +389,26 @@
     </div>
 
 <script>
-    function updateDetail() {
-        const select = document.getElementById('pilih_kegiatan');
-        const option = select.options[select.selectedIndex];
-        const infoBox = document.getElementById('info_kegiatan');
+function updateDetail() {
+    const select = document.getElementById('pilih_kegiatan');
+    const selectedOption = select.options[select.selectedIndex];
+    const detailBox = document.getElementById('detail_box');
 
-        if (select.value !== "") {
-            infoBox.classList.remove('hidden');
-            document.getElementById('text_jadwal').innerText = "📅 Jadwal: " + option.getAttribute('data-jadwal');
-            document.getElementById('text_tempat').innerText = "📍 Tempat: " + option.getAttribute('data-tempat');
-            document.getElementById('text_deskripsi').innerText = option.getAttribute('data-deskripsi');
-        } else {
-            infoBox.classList.add('hidden');
-        }
+    if (selectedOption.value !== "") {
+        // Ambil atribut dari option yang dipilih
+        const kuotaValue = selectedOption.getAttribute('data-kuota');
+        
+        // Isi teks ke span yang memiliki ID det_kuota
+        document.getElementById('det_jadwal').innerText = selectedOption.getAttribute('data-jadwal');
+        document.getElementById('det_tempat').innerText = selectedOption.getAttribute('data-tempat');
+        document.getElementById('det_deskripsi').innerText = selectedOption.getAttribute('data-deskripsi');
+        document.getElementById('det_kuota').innerText = kuotaValue ? kuotaValue : '0';
+
+        detailBox.classList.remove('hidden');
+    } else {
+        detailBox.classList.add('hidden');
     }
+}
 
     function goToStep(step) {
         const currentActive = document.querySelector('.step-content.active');
@@ -511,8 +521,6 @@ function finalCheck() {
         if (omzetInput && omzetInput.value) {
             omzetInput.value = omzetInput.value.replace(/\./g, '');
         }
-        
-        // Efek loading pada tombol
         if (btn) {
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Mengirim...';
             btn.disabled = true;

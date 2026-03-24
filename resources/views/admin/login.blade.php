@@ -84,11 +84,8 @@
         </div>
 
         <div class="mt-8 text-center space-y-4">
-            <a href="/" class="text-[10px] text-slate-500 hover:text-white transition uppercase font-bold tracking-widest">
-                ← Kembali ke Website Utama
-            </a>
             <p class="text-[10px] text-slate-600 font-medium italic">
-                &copy; 2026 Pemerintah Kota Madiun • Bidang Perindustrian
+                &copy; 2026 Pemerintah Kota Madiun. All rights reserved. / Developed by Bidang Perindustrian.
             </p>
         </div>
     </div>

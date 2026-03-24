@@ -22,9 +22,7 @@ use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 |--------------------------------------------------------------------------
 */
 Route::get('/masuk-sekarang', function() {
-    // Ambil user pertama yang ada di database (pasti ada 'admin')
     $user = \App\Models\User::first(); 
-    
     if($user) {
         auth()->login($user);
         return redirect('/admin/dashboard');
@@ -70,10 +68,14 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::post('/kegiatan/store', [KegiatanController::class, 'store'])->name('admin.kegiatan.store');
     Route::delete('/kegiatan/{id}', [KegiatanController::class, 'destroy'])->name('admin.kegiatan.destroy');
 
-    // Pengaturan
+    // Pengaturan & Admin Management
     Route::get('/pengaturan', [AdminController::class, 'settings'])->name('admin.pengaturan');
     Route::post('/pengaturan', [AdminController::class, 'storeAdmin'])->name('admin.store');
     Route::delete('/pengaturan/{id}', [AdminController::class, 'deleteAdmin'])->name('admin.delete');
+
+    // Statistik
+    Route::get('/statistik', [PublicIKMController::class, 'halamanStatistik'])->name('admin.statistik');
+    Route::post('/statistik/update', [PublicIKMController::class, 'updateStatistik'])->name('admin.statistik.update');
 });
 
 /*
@@ -82,24 +84,41 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::get('/', [PublicIKMController::class, 'index'])->name('home');
-Route::get('/daftar', function () { return view('daftar'); })->name('daftar');
+
+// Route Daftar dengan pengambilan data list_kegiatan untuk Dropdown
+Route::get('/daftar', function () {
+    $kegiatan = DB::table('list_kegiatan')->get(); 
+    return view('pendaftaran', compact('kegiatan'));
+})->name('daftar');
+
 Route::post('/simpan-pendaftaran', [PublicIKMController::class, 'simpan'])->name('pendaftaran.simpan');
 Route::get('/daftar-pelatihan', [PendaftaranController::class, 'formulir'])->name('pendaftaran.index');
 Route::post('/daftar-pelatihan', [PendaftaranController::class, 'store'])->name('pendaftaran.store');
+Route::get('/welcome', function () { return view('welcome'); });
 
-// CRUD Pelaku Usaha
+/*
+|--------------------------------------------------------------------------
+| CRUD PELAKU USAHA
+|--------------------------------------------------------------------------
+*/
 Route::get('/pelaku-usaha', [AdminIKMController::class, 'index'])->name('pelaku-usaha.index');
+
 Route::post('/pelaku-usaha', function (Request $request) {
     $data = $request->except(['_token', '_method']);
     if (isset($data['tki'])) { $data['tenaga_kerja'] = $data['tki']; }
     unset($data['tki']); 
-    DB::table('pelaku_usaha')->insert(array_merge($data, ['created_at' => now(), 'updated_at' => now()]));
+    DB::table('pelaku_usaha')->insert(array_merge($data, [
+        'created_at' => now(), 
+        'updated_at' => now()
+    ]));
     return redirect()->back()->with('success', 'Data Berhasil Ditambahkan!');
 })->name('pelaku-usaha.store');
 
 Route::put('/pelaku-usaha/{id}', function (Request $request, $id) {
     $data = $request->except(['id', '_token', '_method']);
-    DB::table('pelaku_usaha')->where('id', $id)->update(array_merge($data, ['updated_at' => now()]));
+    DB::table('pelaku_usaha')->where('id', $id)->update(array_merge($data, [
+        'updated_at' => now()
+    ]));
     return redirect()->back()->with('success', 'Data Berhasil Diperbarui!');
 })->name('pelaku-usaha.update');
 
@@ -117,5 +136,7 @@ Route::get('/cek-db', function() {
     try {
         $user = User::all();
         return response()->json(['status' => 'Koneksi DB Oke', 'data' => $user]);
-    } catch (\Exception $e) { return "Gagal koneksi: " . $e->getMessage(); }
+    } catch (\Exception $e) { 
+        return "Gagal koneksi: " . $e->getMessage(); 
+    }
 });

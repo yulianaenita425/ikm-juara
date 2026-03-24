@@ -215,6 +215,6 @@ class PendaftaranController extends Controller
     public function formulir()
     {
         $list_kegiatan = DB::table('list_kegiatan')->where('status', 'aktif')->get();
-        return view('pendaftaran', compact('list_kegiatan'));
+        return view('daftar', compact('list_kegiatan'));
     }
 }
