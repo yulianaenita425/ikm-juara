@@ -85,6 +85,9 @@
             <button onclick="openImportModal()" class="flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg hover:bg-amber-100 text-sm transition">
                 <span>Import</span>
             </button>
+                <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 rounded-lg text-sm font-semibold transition flex items-center shadow-sm">
+                    <i class="fas fa-arrow-left mr-2"></i> Kembali ke Dashboard
+                </a>
         </div>
     </header>
 

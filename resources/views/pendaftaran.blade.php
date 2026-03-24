@@ -31,11 +31,23 @@
             <p class="text-slate-500 mt-2">Data ini membantu kami menyesuaikan materi dengan kondisi usaha Anda.</p>
         </div>
 
+        {{-- BAGIAN NOTIFIKASI SUKSES --}}
         @if(session('success'))
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded shadow-sm flex items-center">
-                <i class="fas fa-check-circle mr-3"></i>
-                {{ session('success') }}
+            <div id="success-alert" class="bg-green-100 border-l-4 border-green-500 text-green-700 p-5 mb-6 rounded-xl shadow-lg flex items-center animate-bounce">
+                <i class="fas fa-check-circle text-2xl mr-3"></i>
+                <div>
+                    <p class="font-bold">Pendaftaran Berhasil!</p>
+                    <p class="text-sm">{{ session('success') }}</p>
+                </div>
             </div>
+            <script>
+                // Scroll otomatis ke notifikasi jika muncul
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                // Hilangkan notifikasi setelah 10 detik
+                setTimeout(() => {
+                    document.getElementById('success-alert')?.remove();
+                }, 10000);
+            </script>
         @endif
 
         @if ($errors->any())
@@ -49,12 +61,28 @@
             </div>
         @endif
 
+        @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+@if (session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
+
         <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
             <div class="h-2 bg-slate-100">
                 <div id="progress-bar" class="h-full bg-indigo-600" style="width: 20%"></div>
             </div>
 
-            <form action="{{ route('pendaftaran.store') }}" method="POST" enctype="multipart/form-data" id="registrationForm">
+            <form action="{{ route('pendaftaran.store') }}" method="POST" enctype="multipart/form-data" id="registrationForm" onsubmit="return finalCheck()">
                 @csrf
 
                 <div class="step-content active p-8" id="step-1">
@@ -232,8 +260,8 @@
                         <div class="space-y-3">
                             <label class="block font-medium text-sm">Tantangan Utama (Bisa pilih > 1):</label>
                             <div class="grid grid-cols-2 gap-3 text-xs">
-                                @php $tantangans = ['Penjualan sepi', 'Marketing kurang efektif', 'Modal terbatas', 'Produksi terbatas', 'SDM kurang', 'Lainnya']; @endphp
-                                @foreach($tantangans as $t)
+                                @php $tantangan = ['Penjualan sepi', 'Marketing kurang efektif', 'Modal terbatas', 'Produksi terbatas', 'SDM kurang', 'Lainnya']; @endphp
+                                @foreach($tantangan as $t)
                                 <label class="cursor-pointer relative group">
                                     <input type="checkbox" name="tantangan[]" value="{{ $t }}" class="hidden custom-checkbox">
                                     <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl transition-all group-hover:bg-indigo-50 flex items-center gap-2">
@@ -348,7 +376,7 @@
 
                     <div class="flex gap-4 mt-8">
                         <button type="button" onclick="goToStep(4)" class="w-1/3 py-4 border rounded-2xl hover:bg-slate-100 transition font-bold">Kembali</button>
-                        <button type="submit" class="w-2/3 py-4 bg-indigo-700 hover:bg-indigo-800 text-white rounded-2xl font-extrabold shadow-lg transition transform active:scale-95">Kirim Pendaftaran 🚀</button>
+                        <button type="submit" id="submitBtn" class="w-2/3 py-4 bg-indigo-700 hover:bg-indigo-800 text-white rounded-2xl font-extrabold shadow-lg transition transform active:scale-95">Kirim Pendaftaran 🚀</button>
                     </div>
                 </div>
             </form>
@@ -380,11 +408,11 @@
             const inputs = currentActive.querySelectorAll('input[required], select[required], textarea[required]');
             let allValid = true;
 
+            // Bersihkan error lama
+            currentActive.querySelectorAll('.error-msg').forEach(el => el.remove());
+            currentActive.querySelectorAll('.border-red-500').forEach(el => el.classList.remove('border-red-500', 'shake'));
+
             inputs.forEach(input => {
-                const oldError = input.closest('div').querySelector('.error-msg');
-                if (oldError) oldError.remove();
-                
-                // Cek Radio Group
                 if (input.type === 'radio') {
                     const name = input.name;
                     const checked = currentActive.querySelector(`input[name="${name}"]:checked`);
@@ -393,18 +421,18 @@
                         showError(input.closest('.grid') || input.parentNode, "Pilih salah satu");
                     }
                 } 
-                // Cek Input Biasa/File
                 else if (!input.value.trim() || (input.type === 'file' && input.files.length === 0)) {
                     allValid = false;
                     input.classList.add('border-red-500', 'shake');
                     showError(input, "Bidang ini wajib diisi");
                 } 
-                // Cek Panjang Digit NIK/NIB
                 else if (input.name === 'nik' && input.value.length < 16) {
                     allValid = false;
+                    input.classList.add('border-red-500', 'shake');
                     showError(input, "NIK harus 16 digit");
                 } else if (input.name === 'nib' && input.value.length < 13) {
                     allValid = false;
+                    input.classList.add('border-red-500', 'shake');
                     showError(input, "NIB harus 13 digit");
                 }
             });
@@ -465,13 +493,31 @@
         };
     }
 
-    function handleRupiah(element) {
+function handleRupiah(element) {
         let value = element.value.replace(/[^0-9]/g, ""); 
         if (value !== "") {
             element.value = new Intl.NumberFormat('id-ID').format(value);
         } else {
             element.value = "";
         }
+    }
+
+    // FUNGSI PENTING: Membersihkan format rupiah sebelum dikirim ke database
+function finalCheck() {
+        const omzetInput = document.getElementById('omzet_input');
+        const btn = document.getElementById('submitBtn');
+
+        // Hapus semua titik agar menjadi angka murni (Integer) sebelum masuk ke database
+        if (omzetInput && omzetInput.value) {
+            omzetInput.value = omzetInput.value.replace(/\./g, '');
+        }
+        
+        // Efek loading pada tombol
+        if (btn) {
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Mengirim...';
+            btn.disabled = true;
+        }
+        return true;
     }
 </script>
 </body>
