@@ -7,34 +7,63 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
+use App\Models\User;
 
 class IKMController extends Controller 
 {
-    /**
-     * Menampilkan halaman utama manajemen IKM dengan Statistik Widget
-     */
 public function index()
 {
-    // 1. Hitung total KESELURUHAN dari database (bukan cuma yang tampil di halaman)
-    $totalinvestasi = DB::table('pelaku_usaha')->sum('investasi');
-    $totalTenagaKerja = DB::table('pelaku_usaha')->sum('tenaga_kerja');
-    $totalSemuaData = DB::table('pelaku_usaha')->count(); 
-    $totalPelakuUnik = DB::table('pelaku_usaha')
-                    ->select('nib')
-                    ->distinct()
-                    ->get()
-                    ->count();
+    // Mengatasi error "Undefined variable $totalIkm" di welcome.blade.php
+    $totalIkm = DB::table('pelaku_usaha')->count();
+    
+    // Data untuk Chart
+    $dataChart = [
+        'Kartoharjo' => DB::table('pelaku_usaha')->where('kecamatan', 'Kartoharjo')->count(),
+        'Manguharjo' => DB::table('pelaku_usaha')->where('kecamatan', 'Manguharjo')->count(),
+        'Taman'      => DB::table('pelaku_usaha')->where('kecamatan', 'Taman')->count(),
+    ];
 
-    $data = DB::table('pelaku_usaha')->orderBy('id', 'desc')->get();
+    $terakhirUpdate = DB::table('publikasi')->max('updated_at') ?? now();
+    $berita = DB::table('publikasi')->latest()->take(4)->get();
 
-    // 3. Kirim semuanya ke view
-    return view('admin.pelaku_usaha.index', compact(
-        'data', 
-        'totalinvestasi', 
-        'totalTenagaKerja', 
-        'totalSemuaData', 
-        'totalPelakuUnik'
-    ));
+    // Pastikan semua variabel ini masuk ke compact
+    return view('welcome', compact('totalIkm', 'dataChart', 'terakhirUpdate', 'berita'));
+}
+
+public function dashboardAdmin()
+{
+    // Mengatasi error "Undefined variable $totalKegiatan" di dashboard.blade.php
+    $totalIkm = DB::table('pelaku_usaha')->count();
+    $totalAdmin = DB::table('users')->count();
+    
+    // Ambil total dari tabel list_kegiatan agar variabel $totalKegiatan terisi
+    $totalKegiatan = DB::table('list_kegiatan')->count(); 
+
+    return view('admin.dashboard', compact('totalIkm', 'totalAdmin', 'totalKegiatan'));
+}
+
+    /**
+     * HALAMAN ADMIN (DATA PELAKU USAHA)
+     * Menampilkan tabel lengkap dan statistik investasi untuk internal admin
+     */
+    public function dataIkmAdmin()
+    {
+        // Hitung total KESELURUHAN untuk widget admin
+        $totalinvestasi = DB::table('pelaku_usaha')->sum('investasi');
+        $totalTenagaKerja = DB::table('pelaku_usaha')->sum('tenaga_kerja');
+        $totalSemuaData = DB::table('pelaku_usaha')->count(); 
+        $totalPelakuUnik = DB::table('pelaku_usaha')->select('nib')->distinct()->count();
+
+        // Ambil semua data untuk tabel
+        $data = DB::table('pelaku_usaha')->orderBy('id', 'desc')->get();
+
+        return view('admin.pelaku_usaha.index', compact(
+            'data', 
+            'totalinvestasi', 
+            'totalTenagaKerja', 
+            'totalSemuaData', 
+            'totalPelakuUnik'
+        ));
 }
 
 /**

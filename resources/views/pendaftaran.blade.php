@@ -182,7 +182,7 @@
                     <h2 class="text-xl font-bold mb-6 text-indigo-900"><i class="fas fa-store mr-2 text-indigo-500"></i>Informasi Usaha</h2>
                     <div class="space-y-4">
                         <div class="space-y-1">
-                            <label class="text-slate-500 ml-1 text-sm">Nama Usaha / Produk</label>
+                            <label class="text-slate-500 ml-1 text-sm">Nama Usaha / Produk - Merek Usaha Anda</label>
                             <input type="text" name="nama_usaha" placeholder="Contoh: Keripik Tempe Barokah" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
                         </div>
                         
@@ -190,7 +190,7 @@
                         
                         <div class="space-y-1">
                             <label class="text-slate-500 ml-1 text-sm">Alamat Lengkap Usaha</label>
-                            <textarea name="alamat_usaha" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Contoh: Jl. Pahlawan No. 12, Kota Madiun" required>{{ old('alamat_usaha') }}</textarea>
+                            <textarea name="alamat_usaha" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Contoh: Jl. Pahlawan Gang Teratai, No. 12, Kota Madiun" required>{{ old('alamat_usaha') }}</textarea>
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
@@ -256,7 +256,7 @@
                                 <select name="stabilitas_omzet" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
                                     <option value="Ya">Ya, Stabil</option>
                                     <option value="Tidak">Tidak</option>
-                                    <option value="Musiman">Musiman</option>
+                                    <option value="Musiman">Musiman / made by order</option>
                                 </select>
                             </div>
                         </div>
@@ -293,7 +293,7 @@
 
                         <div class="grid grid-cols-2 gap-4">
                             <div class="space-y-1">
-                                <label class="text-xs text-slate-500">Jumlah Karyawan Tetap</label>
+                                <label class="text-xs text-slate-500">Jumlah Karyawan Tetap (tidak termasuk owner / pemilik)</label>
                                 <input type="number" name="karyawan_tetap" value="0" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
                             </div>
                             <div class="space-y-1">
@@ -347,7 +347,7 @@
                         </div>
 
                         <div class="space-y-3">
-                            <label class="font-medium text-sm">Apakah Anda pernah mengikuti pelatihan IKM sebelumnya?</label>
+                            <label class="font-medium text-sm">Apakah Anda pernah mengikuti pelatihan IKM (khususnya diselenggarakan oleh DisnakerKUKM) sebelumnya?</label>
                             <div class="flex gap-6">
                                 <label class="flex items-center gap-2 cursor-pointer group">
                                     <input type="radio" name="pernah_pelatihan" value="Pernah" class="w-4 h-4 accent-indigo-600" required> 

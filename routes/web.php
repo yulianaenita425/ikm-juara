@@ -18,26 +18,21 @@ use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 /*
 |--------------------------------------------------------------------------
-| BYPASS LOGIN (Gunakan ini jika Form Login Error)
-|--------------------------------------------------------------------------
-*/
-Route::get('/masuk-sekarang', function() {
-    $user = \App\Models\User::first(); 
-    if($user) {
-        auth()->login($user);
-        return redirect('/admin/dashboard');
-    }
-    return "Database kosong, tidak ada user untuk login.";
-});
-
-/*
-|--------------------------------------------------------------------------
-| AUTHENTICATION
+| AUTHENTICATION & BYPASS
 |--------------------------------------------------------------------------
 */
 Route::get('/login', [LoginController::class, 'showLogin'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+Route::get('/masuk-sekarang', function() {
+    $user = \App\Models\User::first(); 
+    if($user) {
+        auth()->login($user);
+        return redirect()->route('admin.dashboard');
+    }
+    return "Database kosong, tidak ada user untuk login.";
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -46,16 +41,21 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 */
 Route::middleware(['auth'])->prefix('admin')->group(function () {
     
-    // Dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    // DASHBOARD
+    Route::get('/dashboard', [AdminController::class, 'dashboardAdmin'])->name('admin.dashboard');
     
-    // Data IKM & Import/Export
-    Route::get('/data-ikm', [AdminIKMController::class, 'index'])->name('admin.data-ikm');
+// Manajemen Publikasi
+Route::get('/publikasi', [AdminController::class, 'publikasi'])->name('admin.publikasi');
+Route::post('/publikasi/store', [AdminController::class, 'storePublikasi'])->name('admin.publikasi.store');
+Route::delete('/publikasi/destroy/{id}', [AdminController::class, 'deletePublikasi'])->name('admin.publikasi.destroy');
+
+    // DATA IKM & Import/Export
+    Route::get('/data-ikm', [AdminIKMController::class, 'dataIkmAdmin'])->name('admin.data-ikm');
     Route::post('/import-ikm', [AdminIKMController::class, 'import'])->name('admin.import-ikm');
     Route::get('/export-ikm', [AdminIKMController::class, 'export'])->name('admin.export-ikm');
     Route::get('/download-template', [AdminIKMController::class, 'downloadTemplate'])->name('admin.download-template');
 
-    // Pendaftar Pelatihan
+    // PENDAFTAR PELATIHAN
     Route::get('/pendaftar', [PendaftaranController::class, 'dataPendaftar'])->name('admin.pendaftar');
     Route::get('/pendaftar/export', [PendaftaranController::class, 'exportExcel'])->name('admin.pendaftar.export');
     Route::get('/pendaftar/recycle-bin', [PendaftaranController::class, 'recycleBin'])->name('admin.recycle');
@@ -63,29 +63,30 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::delete('/pendaftar/force-delete/{id}', [PendaftaranController::class, 'forceDelete'])->name('admin.force_delete');
     Route::delete('/pendaftar/{id}', [PendaftaranController::class, 'destroy'])->name('admin.pendaftar.destroy');
 
-    // Kegiatan
+    // KEGIATAN
     Route::get('/kegiatan', [KegiatanController::class, 'index'])->name('admin.kegiatan.index');
     Route::post('/kegiatan/store', [KegiatanController::class, 'store'])->name('admin.kegiatan.store');
     Route::delete('/kegiatan/{id}', [KegiatanController::class, 'destroy'])->name('admin.kegiatan.destroy');
 
-    // Pengaturan & Admin Management
+    // PENGATURAN & ADMIN MANAGEMENT
     Route::get('/pengaturan', [AdminController::class, 'settings'])->name('admin.pengaturan');
-    Route::post('/pengaturan', [AdminController::class, 'storeAdmin'])->name('admin.store');
-    Route::delete('/pengaturan/{id}', [AdminController::class, 'deleteAdmin'])->name('admin.delete');
+    Route::post('/pengaturan/store', [AdminController::class, 'storeAdmin'])->name('admin.users.store');
+    Route::put('/pengaturan/update/{id}', [AdminController::class, 'updateAdmin'])->name('admin.users.update');
+    Route::delete('/pengaturan/destroy/{id}', [AdminController::class, 'deleteAdmin'])->name('admin.users.destroy');
 
-    // Statistik
+    // STATISTIK (MANUAL)
     Route::get('/statistik', [PublicIKMController::class, 'halamanStatistik'])->name('admin.statistik');
     Route::post('/statistik/update', [PublicIKMController::class, 'updateStatistik'])->name('admin.statistik.update');
 });
 
 /*
 |--------------------------------------------------------------------------
-| PUBLIC & CRUD ROUTES
+| PUBLIC ROUTES (Halaman Depan)
 |--------------------------------------------------------------------------
+| KOREKSI: Gunakan getStatistikManual agar data 460 muncul.
 */
-Route::get('/', [PublicIKMController::class, 'index'])->name('home');
+Route::get('/', [PublicIKMController::class, 'getStatistikManual'])->name('home');
 
-// Route Daftar dengan pengambilan data list_kegiatan untuk Dropdown
 Route::get('/daftar', function () {
     $kegiatan = DB::table('list_kegiatan')->get(); 
     return view('pendaftaran', compact('kegiatan'));
@@ -98,7 +99,7 @@ Route::get('/welcome', function () { return view('welcome'); });
 
 /*
 |--------------------------------------------------------------------------
-| CRUD PELAKU USAHA
+| CRUD PELAKU USAHA (Direct DB Update)
 |--------------------------------------------------------------------------
 */
 Route::get('/pelaku-usaha', [AdminIKMController::class, 'index'])->name('pelaku-usaha.index');
@@ -127,9 +128,13 @@ Route::delete('/pelaku-usaha/{id}', function ($id) {
     return redirect()->back()->with('success', 'Data Berhasil Dihapus!');
 })->name('pelaku-usaha.destroy');
 
+Route::get('/profil', function () { return view('profil');})->name('profil');
+Route::get('/profil-dinas', function () { return view('profil-dinas');})->name('profil-dinas');
+Route::get('/alur-pendaftaran', function () { return view('alur-pendaftaran'); })->name('alur-pendaftaran');
+Route::get('/faq', function () { return view('faq'); })->name('faq');
 /*
 |--------------------------------------------------------------------------
-| UTILITY
+| UTILITY & DEBUG
 |--------------------------------------------------------------------------
 */
 Route::get('/cek-db', function() {
