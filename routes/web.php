@@ -47,7 +47,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('/publikasi', [AdminController::class, 'publikasi'])->name('publikasi');
     Route::post('/publikasi/store', [AdminController::class, 'storePublikasi'])->name('publikasi.store');
-    Route::patch('/publikasi/{id}/toggle', [AdminController::class, 'toggle'])->name('publikasi.toggle');
+    Route::patch('/publikasi/{id}/toggle', [AdminController::class, 'togglePublikasi'])->name('publikasi.toggle');
     Route::delete('/publikasi/{id}', [AdminController::class, 'destroyPublikasi'])->name('publikasi.destroy');
 
     // DATA IKM & Import/Export (Fitur Lama)

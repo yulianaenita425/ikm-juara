@@ -18,7 +18,7 @@ class AdminController extends Controller
 {
 public function publikasi()
     {
-        $publikasi = DB::table('publikasi')->orderBy('tanggal', 'desc')->get();
+        $publikasi = DB::table('publikasi')->where('is_active', true)->orderBy('tanggal', 'desc')->get();
         return view('admin.publikasi', compact('publikasi'));
     }
 
