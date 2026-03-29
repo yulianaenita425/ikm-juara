@@ -17,17 +17,20 @@ use Illuminate\Support\Facades\Http;
 class AdminController extends Controller
 {
 public function publikasi()
-    {
-        $publikasi = DB::table('publikasi')->where('is_active', true)->orderBy('tanggal', 'desc')->get();
-        return view('admin.publikasi', compact('publikasi'));
-    }
+{
+    // JANGAN tambahkan ->where('is_active', 1) di sini
+    $publikasi = DB::table('publikasi')->orderBy('tanggal', 'desc')->get();
+    return view('admin.publikasi', compact('publikasi'));
+}
 
 public function toggle($id)
 {
+    // Mengambil data dari tabel publikasi
     $publikasi = \DB::table('publikasi')->where('id', $id)->first();
     
     if ($publikasi) {
         \DB::table('publikasi')->where('id', $id)->update([
+            // Membalikkan nilai is_active
             'is_active' => !$publikasi->is_active,
             'updated_at' => now()
         ]);
@@ -35,7 +38,7 @@ public function toggle($id)
     }
     
     return back()->with('error', 'Data tidak ditemukan.');
-    }
+}
 
     public function storePublikasi(Request $request) 
     {
