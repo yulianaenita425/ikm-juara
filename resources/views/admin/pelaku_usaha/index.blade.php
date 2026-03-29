@@ -205,35 +205,66 @@
                     <tbody class="divide-y text-sm">
                         @forelse($data as $item)
                         <tr id="row-{{ $item->id }}" class="hover:bg-slate-50 transition">
-                            <td class="col-sticky-1 px-6 py-4 text-center text-gray-500">
-                                {{ $loop->iteration }}
-                            </td>
-                            <td class="col-sticky-2 p-4 border-r bg-white font-bold text-indigo-900">
-                                {{ $item->nama_perusahaan }}
-                            </td>
-                            <td class="p-4 border-r font-mono text-xs">{{ $item->nib }}</td>
-                            <td class="p-4 border-r font-mono text-xs">{{ $item->nik }}</td>
-                            <td class="p-4 border-r">{{ $item->nama_pemilik }}</td>
-                            <td class="p-4 border-r">{{ $item->no_telp }}</td>
-                            <td class="p-4 border-r">{{ $item->email }}</td>
-                            <td class="p-4 border-r">{{ $item->skala_usaha }}</td>
-                            <td class="p-4 border-r">{{ $item->jenis_perusahaan }}</td>
-                            <td class="p-4 border-r">{{ $item->nama_proyek }}</td>
-                            <td class="p-4 border-r font-bold">{{ $item->kbli }}</td>
-                            <td class="p-4 border-r">{{ $item->uraian_kbli }}</td>
-                            <td class="p-4 border-r">{{ $item->alamat_usaha }}</td>
-                            <td class="p-4 border-r">{{ $item->kecamatan }}</td>
-                            <td class="p-4 border-r">{{ $item->kelurahan }}</td>
-                            <td class="p-4 border-r">{{ $item->tenaga_kerja }}</td>
-                            <td class="p-4 border-r">
-                                <span class="px-2 py-1 rounded-full text-[10px] font-bold uppercase bg-blue-100 text-blue-700">
-                                    {{ $item->tingkat_risiko }}
-                                </span>
-                            </td>
-                            <td class="p-4 border-r font-bold text-emerald-600">
-                                {{ number_format($item->investasi, 0, ',', '.') }}
-                            </td>
-                            <td class="p-4 border-r">{{ $item->tgl_terbit }}</td>
+<td class="col-sticky-1 px-6 py-4 text-center text-gray-500">
+    {{ $loop->iteration }}
+</td>
+
+<td class="col-sticky-2 p-4 border-r bg-white font-bold text-indigo-900 whitespace-normal break-words min-w-[150px]">
+    {{ $item->nama_perusahaan }}
+</td>
+
+<td class="p-4 border-r font-mono text-xs">{{ $item->nib }}</td>
+<td class="p-4 border-r font-mono text-xs">{{ $item->nik }}</td>
+
+<td class="p-4 border-r align-middle whitespace-normal">
+    <div class="line-clamp-3 text-[11px] leading-tight w-[200px] break-words">
+        {{ $item->nama_pemilik }}
+    </div>
+</td>
+
+<td class="p-4 border-r">{{ $item->no_telp }}</td>
+<td class="p-4 border-r">{{ $item->email }}</td>
+<td class="p-4 border-r">{{ $item->skala_usaha }}</td>
+
+<td class="p-4 border-r align-middle whitespace-normal">
+    <div class="line-clamp-5 text-[11px] leading-tight w-[200px] break-words">
+    {{ $item->jenis_perusahaan }}</td>
+
+<td class="p-4 border-r align-middle whitespace-normal">
+    <div class="line-clamp-3 text-[11px] leading-tight w-[200px] break-words">
+        {{ $item->nama_proyek }}
+    </div>
+</td>
+
+<td class="p-4 border-r font-bold text-center">{{ $item->kbli }}</td>
+
+<td class="p-4 border-r align-middle whitespace-normal">
+    <div class="line-clamp-5 text-[11px] leading-tight w-[200px] break-words">
+        {{ $item->uraian_kbli }}
+    </div>
+</td>
+
+<td class="p-4 border-r align-middle whitespace-normal">
+    <div class="line-clamp-5 text-[11px] leading-tight w-[200px] break-words">
+        {{ $item->alamat_usaha }}
+    </div>
+</td>
+
+<td class="p-4 border-r">{{ $item->kecamatan }}</td>
+<td class="p-4 border-r">{{ $item->kelurahan }}</td>
+<td class="p-4 border-r text-center">{{ $item->tenaga_kerja }}</td>
+
+<td class="p-4 border-r text-center">
+    <span class="px-2 py-1 rounded-full text-[9px] font-bold uppercase bg-blue-100 text-blue-700 whitespace-nowrap">
+        {{ $item->tingkat_risiko }}
+    </span>
+</td>
+
+<td class="p-4 border-r font-bold text-emerald-600 whitespace-nowrap">
+    Rp {{ number_format($item->investasi, 0, ',', '.') }}
+</td>
+
+<td class="p-4 border-r whitespace-nowrap">{{ $item->tgl_terbit }}</td>
                             <td class="px-6 py-4 text-center sticky right-0 bg-white z-10 border-l">
                                 <div class="flex justify-center space-x-2">
                                     <button type="button" @click='window.editData(@json($item))' class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition">
@@ -650,7 +681,6 @@ function filterTable() {
     });
 
 }
-/* --- 5. EXPORT EXCEL LOGIC --- */
 /* --- 5. EXPORT EXCEL LOGIC --- */
 async function exportToExcel() {
     try {

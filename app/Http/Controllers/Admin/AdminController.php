@@ -16,61 +16,69 @@ use Illuminate\Support\Facades\Http;
 
 class AdminController extends Controller
 {
-    // Tambahkan method ini di dalam class AdminController
 public function publikasi()
     {
-        // Mengambil data untuk tabel di Blade
-        $publikasi = DB::table('publikasi')->orderBy('id', 'desc')->get();
+        $publikasi = DB::table('publikasi')->orderBy('tanggal', 'desc')->get();
         return view('admin.publikasi', compact('publikasi'));
     }
-public function storePublikasi(Request $request) {
-    $request->validate([
-        'judul'     => 'required',
-        'deskripsi' => 'required',
-        'gambar'    => 'required|image|max:2048' // Pastikan gambar wajib diisi
-    ]);
 
-    $imageUrl = null;
-
-    if ($request->hasFile('gambar')) {
-        $file = $request->file('gambar');
-        
-        // Pastikan API Key benar dan variabel $file valid
-        $response = Http::asMultipart()->post('https://api.imgbb.com/1/upload', [
-            'key'   => env('IMGBB_API_KEY'), // Pastikan sudah diatur di .env
-            'image' => base64_encode(file_get_contents($file->path())),
-        ]);
-
-        // Cek apakah upload berhasil
-        if ($response->successful()) {
-            $imageUrl = $response->json()['data']['url'];
-        } else {
-            // Jika gagal upload ke ImgBB, stop dan beri pesan error
-            return redirect()->back()->with('error', 'Gagal upload gambar ke ImgBB. Silakan cek koneksi atau API Key.');
-        }
-    }
-
-    // Pastikan $imageUrl tidak null sebelum insert
-    if ($imageUrl) {
-        DB::table('publikasi')->insert([
-            'judul'      => $request->judul,
-            'gambar'     => $imageUrl,
-            'tanggal'    => $request->tanggal,
-            'waktu'      => $request->waktu,
-            'deskripsi'  => $request->deskripsi,
-            'status'     => $request->status,
-            'created_at' => now(),
+public function toggle($id)
+{
+    $publikasi = \DB::table('publikasi')->where('id', $id)->first();
+    
+    if ($publikasi) {
+        \DB::table('publikasi')->where('id', $id)->update([
+            'is_active' => !$publikasi->is_active,
             'updated_at' => now()
         ]);
-        return redirect()->back()->with('success', 'Berita berhasil diterbitkan!');
+        return back()->with('success', 'Status berhasil diperbarui!');
+    }
+    
+    return back()->with('error', 'Data tidak ditemukan.');
     }
 
-    return redirect()->back()->with('error', 'Gambar gagal diproses.');
-}
+    public function storePublikasi(Request $request) 
+    {
+        $request->validate([
+            'judul'     => 'required',
+            'deskripsi' => 'required',
+            'gambar'    => 'required|image|max:2048'
+        ]);
 
-public function deletePublikasi($id)
-{
-// Hapus data berdasarkan ID
+        $imageUrl = null;
+        if ($request->hasFile('gambar')) {
+            $file = $request->file('gambar');
+            $response = Http::asMultipart()->post('https://api.imgbb.com/1/upload', [
+                'key'   => env('IMGBB_API_KEY'),
+                'image' => base64_encode(file_get_contents($file->path())),
+            ]);
+
+            if ($response->successful()) {
+                $imageUrl = $response->json()['data']['url'];
+            } else {
+                return redirect()->back()->with('error', 'Gagal upload ke ImgBB. Periksa API Key.');
+            }
+        }
+
+        if ($imageUrl) {
+            DB::table('publikasi')->insert([
+                'judul'      => $request->judul,
+                'gambar'     => $imageUrl,
+                'tanggal'    => $request->tanggal,
+                'waktu'      => $request->waktu,
+                'deskripsi'  => $request->deskripsi,
+                'status'     => $request->status,
+                'is_active'  => $request->is_active,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+            return redirect()->back()->with('success', 'Berita berhasil diterbitkan!');
+        }
+        return redirect()->back()->with('error', 'Gambar gagal diproses.');
+    }
+
+    public function deletePublikasi($id)
+    {
         DB::table('publikasi')->where('id', $id)->delete();
         return redirect()->back()->with('success', 'Berita berhasil dihapus!');
     }

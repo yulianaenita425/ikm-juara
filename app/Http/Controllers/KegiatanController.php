@@ -23,6 +23,7 @@ class KegiatanController extends Controller
             'tempat_kegiatan' => $request->tempat_kegiatan,
             'kuota_peserta' => $request->kuota_peserta,
             'deskripsi_kegiatan' => $request->deskripsi_kegiatan,
+            'is_active' => $request->is_active, // <--- Simpan status
             'status' => 'aktif',
         ];
 

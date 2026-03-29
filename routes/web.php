@@ -14,6 +14,7 @@ use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PublikasiController;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 /*
@@ -39,56 +40,58 @@ Route::get('/masuk-sekarang', function() {
 | ADMIN ROUTES (PROTECTED)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth'])->prefix('admin')->group(function () {
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     
-    // DASHBOARD
-    Route::get('/dashboard', [AdminController::class, 'dashboardAdmin'])->name('admin.dashboard');
-    
-// Manajemen Publikasi
-Route::get('/publikasi', [AdminController::class, 'publikasi'])->name('admin.publikasi');
-Route::post('/publikasi/store', [AdminController::class, 'storePublikasi'])->name('admin.publikasi.store');
-Route::delete('/publikasi/destroy/{id}', [AdminController::class, 'deletePublikasi'])->name('admin.publikasi.destroy');
+    // DASHBOARD - Menggunakan DashboardController agar lebih rapi
+    Route::get('/dashboard', [AdminController::class, 'dashboardAdmin'])->name('dashboard');
 
-    // DATA IKM & Import/Export
-    Route::get('/data-ikm', [AdminIKMController::class, 'dataIkmAdmin'])->name('admin.data-ikm');
-    Route::post('/import-ikm', [AdminIKMController::class, 'import'])->name('admin.import-ikm');
-    Route::get('/export-ikm', [AdminIKMController::class, 'export'])->name('admin.export-ikm');
-    Route::get('/download-template', [AdminIKMController::class, 'downloadTemplate'])->name('admin.download-template');
+    Route::get('/publikasi', [AdminController::class, 'publikasi'])->name('publikasi');
+    Route::post('/publikasi/store', [AdminController::class, 'storePublikasi'])->name('publikasi.store');
+    Route::patch('/publikasi/{id}/toggle', [AdminController::class, 'toggle'])->name('publikasi.toggle');
+    Route::delete('/publikasi/{id}', [AdminController::class, 'destroyPublikasi'])->name('publikasi.destroy');
 
-    // PENDAFTAR PELATIHAN
-    Route::get('/pendaftar', [PendaftaranController::class, 'dataPendaftar'])->name('admin.pendaftar');
-    Route::get('/pendaftar/export', [PendaftaranController::class, 'exportExcel'])->name('admin.pendaftar.export');
-    Route::get('/pendaftar/recycle-bin', [PendaftaranController::class, 'recycleBin'])->name('admin.recycle');
-    Route::post('/pendaftar/restore/{id}', [PendaftaranController::class, 'restore'])->name('admin.restore');
-    Route::delete('/pendaftar/force-delete/{id}', [PendaftaranController::class, 'forceDelete'])->name('admin.force_delete');
-    Route::delete('/pendaftar/{id}', [PendaftaranController::class, 'destroy'])->name('admin.pendaftar.destroy');
+    // DATA IKM & Import/Export (Fitur Lama)
+    Route::get('/data-ikm', [AdminIKMController::class, 'dataIkmAdmin'])->name('data-ikm');
+    Route::post('/import-ikm', [AdminIKMController::class, 'import'])->name('import-ikm');
+    Route::get('/export-ikm', [AdminIKMController::class, 'export'])->name('export-ikm');
+    Route::get('/download-template', [AdminIKMController::class, 'downloadTemplate'])->name('download-template');
 
-    // KEGIATAN
-    Route::get('/kegiatan', [KegiatanController::class, 'index'])->name('admin.kegiatan.index');
-    Route::post('/kegiatan/store', [KegiatanController::class, 'store'])->name('admin.kegiatan.store');
-    Route::delete('/kegiatan/{id}', [KegiatanController::class, 'destroy'])->name('admin.kegiatan.destroy');
+    // PENDAFTAR PELATIHAN (Fitur Lama)
+    Route::get('/pendaftar', [PendaftaranController::class, 'dataPendaftar'])->name('pendaftar');
+    Route::get('/pendaftar/export', [PendaftaranController::class, 'exportExcel'])->name('pendaftar.export');
+    Route::get('/pendaftar/recycle-bin', [PendaftaranController::class, 'recycleBin'])->name('recycle');
+    Route::post('/pendaftar/restore/{id}', [PendaftaranController::class, 'restore'])->name('restore');
+    Route::delete('/pendaftar/force-delete/{id}', [PendaftaranController::class, 'forceDelete'])->name('force_delete');
+    Route::delete('/pendaftar/{id}', [PendaftaranController::class, 'destroy'])->name('pendaftar.destroy');
 
-    // PENGATURAN & ADMIN MANAGEMENT
-    Route::get('/pengaturan', [AdminController::class, 'settings'])->name('admin.pengaturan');
-    Route::post('/pengaturan/store', [AdminController::class, 'storeAdmin'])->name('admin.users.store');
-    Route::put('/pengaturan/update/{id}', [AdminController::class, 'updateAdmin'])->name('admin.users.update');
-    Route::delete('/pengaturan/destroy/{id}', [AdminController::class, 'deleteAdmin'])->name('admin.users.destroy');
+    // KEGIATAN (Fitur Lama)
+    Route::get('/kegiatan', [KegiatanController::class, 'index'])->name('kegiatan.index');
+    Route::post('/kegiatan/store', [KegiatanController::class, 'store'])->name('kegiatan.store');
+    Route::delete('/kegiatan/{id}', [KegiatanController::class, 'destroy'])->name('kegiatan.destroy');
 
-    // STATISTIK (MANUAL)
-    Route::get('/statistik', [PublicIKMController::class, 'halamanStatistik'])->name('admin.statistik');
-    Route::post('/statistik/update', [PublicIKMController::class, 'updateStatistik'])->name('admin.statistik.update');
+    // PENGATURAN & ADMIN MANAGEMENT (Fitur Lama)
+    Route::get('/pengaturan', [AdminController::class, 'settings'])->name('pengaturan');
+    Route::post('/pengaturan/store', [AdminController::class, 'storeAdmin'])->name('users.store');
+    Route::put('/pengaturan/update/{id}', [AdminController::class, 'updateAdmin'])->name('users.update');
+    Route::delete('/pengaturan/destroy/{id}', [AdminController::class, 'deleteAdmin'])->name('users.destroy');
+
+    // STATISTIK (Fitur Lama)
+    Route::get('/statistik', [PublicIKMController::class, 'halamanStatistik'])->name('statistik');
+    Route::post('/statistik/update', [PublicIKMController::class, 'updateStatistik'])->name('statistik.update');
 });
 
 /*
 |--------------------------------------------------------------------------
 | PUBLIC ROUTES (Halaman Depan)
 |--------------------------------------------------------------------------
-| KOREKSI: Gunakan getStatistikManual agar data 460 muncul.
 */
 Route::get('/', [PublicIKMController::class, 'getStatistikManual'])->name('home');
 
 Route::get('/daftar', function () {
-    $kegiatan = DB::table('list_kegiatan')->get(); 
+    $kegiatan = DB::table('list_kegiatan')
+                ->where('is_active', 1) 
+                ->orderBy('id', 'desc')
+                ->get();
     return view('pendaftaran', compact('kegiatan'));
 })->name('daftar');
 
@@ -132,6 +135,7 @@ Route::get('/profil', function () { return view('profil');})->name('profil');
 Route::get('/profil-dinas', function () { return view('profil-dinas');})->name('profil-dinas');
 Route::get('/alur-pendaftaran', function () { return view('alur-pendaftaran'); })->name('alur-pendaftaran');
 Route::get('/faq', function () { return view('faq'); })->name('faq');
+
 /*
 |--------------------------------------------------------------------------
 | UTILITY & DEBUG

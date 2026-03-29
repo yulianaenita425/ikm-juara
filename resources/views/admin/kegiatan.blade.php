@@ -26,6 +26,7 @@
                         <th class="px-4 py-3 text-left">Nama & Sub Pelaksana</th>
                         <th class="px-4 py-3 text-left">Jadwal & Tempat</th>
                         <th class="px-4 py-3 text-center">Kuota</th>
+                        <th class="px-4 py-3 text-center">Status</th>
                         <th class="px-4 py-3 text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -43,6 +44,13 @@
                             <div class="text-xs text-red-500 font-semibold">📍 {{ $k->tempat_kegiatan }}</div>
                         </td>
                         <td class="px-4 py-3 text-center font-bold text-green-600">{{ $k->kuota_peserta }}</td>
+                        <td class="px-4 py-3 text-center">
+                        @if($k->is_active)
+                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">Aktif</span>
+                        @else
+                            <span class="px-2 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full">Nonaktif</span>
+                        @endif
+                        </td>
                         <td class="px-4 py-3 text-center">
                             <div class="flex justify-center gap-2">
                                 <button onclick='editKegiatan(@json($k))' class="bg-yellow-100 text-yellow-600 p-2 rounded hover:bg-yellow-600 hover:text-white transition-all">
@@ -104,6 +112,13 @@
                     <label class="text-xs font-bold text-gray-500 uppercase">Deskripsi</label>
                     <textarea name="deskripsi_kegiatan" id="deskripsi_kegiatan" rows="3" class="w-full border rounded-lg px-3 py-2 text-sm"></textarea>
                 </div>
+                <div class="col-span-2">
+                     <label class="text-xs font-bold text-gray-500 uppercase">Status Publikasi</label>
+                    <select name="is_active" id="is_active" class="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="1">Tampilkan di Pendaftaran (Aktif)</option>
+                        <option value="0">Sembunyikan (Nonaktif)</option>
+                    </select>
+                </div>
             </div>
             <div class="mt-6 flex justify-end gap-3">
                 <button type="button" onclick="closeModal()" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-sm font-bold transition-all">Batal</button>
@@ -135,6 +150,7 @@
         document.getElementById('tgl_selesai').value = data.tgl_selesai;
         document.getElementById('tempat_kegiatan').value = data.tempat_kegiatan;
         document.getElementById('deskripsi_kegiatan').value = data.deskripsi_kegiatan;
+        document.getElementById('is_active').value = data.is_active ? "1" : "0";
         document.getElementById('modalKegiatan').classList.remove('hidden');
     }
 </script>

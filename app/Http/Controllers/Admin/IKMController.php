@@ -23,12 +23,13 @@ public function index()
         'Taman'      => DB::table('pelaku_usaha')->where('kecamatan', 'Taman')->count(),
     ];
 
-    $terakhirUpdate = DB::table('publikasi')->max('updated_at') ?? now();
-    $berita = DB::table('publikasi')->latest()->take(4)->get();
+$terakhirUpdate = DB::table('publikasi')->max('updated_at') ?? now();
+        $berita = DB::table('publikasi')
+            ->where('is_active', 1) // Hanya ambil yang aktif
+            ->get();
 
-    // Pastikan semua variabel ini masuk ke compact
-    return view('welcome', compact('totalIkm', 'dataChart', 'terakhirUpdate', 'berita'));
-}
+        return view('welcome', compact('totalIkm', 'dataChart', 'terakhirUpdate', 'berita'));
+    }
 
 public function dashboardAdmin()
 {

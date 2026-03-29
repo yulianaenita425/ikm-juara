@@ -156,9 +156,11 @@
             </div>
         </div>
 
-        <div class="swiper pub-slider mb-16">
-            <div class="swiper-wrapper">
-                @foreach($berita as $item)
+<div class="swiper pub-slider mb-16">
+    <div class="swiper-wrapper">
+        @foreach($berita as $item)
+            {{-- KOREKSI: Menggunakan $item->is_active sesuai dengan variabel foreach --}}
+            @if($item->is_active) 
                 <div class="swiper-slide cursor-pointer" 
                      @click="openModal = true; activeData = { 
                         judul: '{{ $item->judul }}', 
@@ -180,10 +182,10 @@
                         </div>
                     </div>
                 </div>
-                @endforeach
-            </div>
-        </div>
-
+            @endif {{-- KOREKSI: Pastikan @endif ditambahkan di sini --}}
+        @endforeach
+    </div>
+</div>
 <div x-show="openModal" 
      class="fixed inset-0 z-[999] flex items-center justify-center p-4 md:p-10 bg-black/80 backdrop-blur-md"
      x-transition:enter="transition ease-out duration-300"
